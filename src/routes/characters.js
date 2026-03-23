@@ -1,5 +1,8 @@
 import express from "express";
-import { fetchCharacters } from "../services/api.service.js";
+import {
+  fetchCharacters,
+  fetchCharacterById
+} from "../services/api.service.js";
 
 const router = express.Router();
 
@@ -7,9 +10,11 @@ router.get("/", async (req, res) => {
 
   try {
 
-    const characters = await fetchCharacters();
+    const { page = 1, name = "" } = req.query;
 
-    res.json(characters);
+    const data = await fetchCharacters(page, name);
+
+    res.json(data);
 
   } catch (error) {
 
@@ -27,15 +32,11 @@ router.get("/:id", async (req, res) => {
 
   try {
 
-    const id = req.params.id;
+    const { id } = req.params;
 
-    const response = await fetch(
-      `https://rickandmortyapi.com/api/character/${id}`
-    );
+    const character = await fetchCharacterById(id);
 
-    const data = await response.json();
-
-    res.json(data);
+    res.json(character);
 
   } catch (error) {
 
@@ -46,5 +47,6 @@ router.get("/:id", async (req, res) => {
   }
 
 });
+
 
 export default router;
